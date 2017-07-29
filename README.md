@@ -18,7 +18,7 @@ Patch-based spatial analysis system (*r.pi*) integrated natively into a Free and
 
 ## r.li
 #### Description
-Toolset for multiscale analysis of landscape structure ([*r.li*](https://grass.osgeo.org/grass72/manuals/r.li.html#references)). It aims at implementing metrics as found in external software for quantitative measures of landscape structure like FRAGSTATS (McGarigal and Marks 1995).
+Toolset for multiscale analysis of landscape structure ([*r.li*](https://grass.osgeo.org/grass72/manuals/r.li.html#references), Baker & Cai 1992). It aims at implementing metrics as found in external software for quantitative measures of landscape structure like FRAGSTATS (McGarigal & Marks 1995).
 
 #### Articles
 - McGarigal, K., & Marks, B. J. 1995. FRAGSTATS: spatial pattern analysis program for quantifying landscape structure. USDA For. Serv. Gen. Tech. Rep. PNW-351. [pdf](https://github.com/mauriciovancine/GRASS-GIS-Landscape-Metrics/blob/master/articles/mcgarigal_marks_1995.pdf).
