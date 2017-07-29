@@ -10,7 +10,7 @@ Landscape Metrics in GRASS GIS
 Patch-based spatial analysis system (*r.pi*) integrated natively into a Free and Open Source GIS (*GRASS GIS*) to be able to analyse large amounts of satellite derived land cover data in a semi-automatic manner, and to ensure high reproducibility and robustness (Wegmann et al. 2017).
 
 ### Article
-- Wegmann, M., Leutner, B. F., Metz, M., Neteler, M., Dech, S., & Rocchini, D. 2017. r.pi: A grass gis package for semi-automatic spatial pattern analysis of remotely sensed land cover data. Methods in Ecology and Evolution, 00:1–9.[pdf](https://github.com/mauriciovancine/GRASS-GIS-Landscape-Metrics/blob/master/articles/wegmann_etal_2017.pdf).
+- Wegmann, M., Leutner, B. F., Metz, M., Neteler, M., Dech, S., & Rocchini, D. 2017. r.pi: A grass gis package for semi-automatic spatial pattern analysis of remotely sensed land cover data. Methods in Ecology and Evolution, 00:1–9. [pdf](https://github.com/mauriciovancine/GRASS-GIS-Landscape-Metrics/blob/master/articles/wegmann_etal_2017.pdf).
 
 ---
 
