@@ -1,2 +1,2 @@
-# GRASS-Landscape-Metrics
+# GRASS Landscape Metrics
 Landscape Metrics in GRASS GIS
