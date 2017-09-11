@@ -1,6 +1,11 @@
 # GRASS GIS Landscape Metrics
 Landscape Metrics in GRASS GIS
 
+## GRASS GIS Tutorial 
+If you don't have familiarity with software *GRASS GIS*, I suggest to you confer this [Tutorial (Portuguese)](https://github.com/mauriciovancine/GRASS-GIS-Tutorial-Python). 
+
+---
+
 ## LSMetrics
 #### Description
 [LSMetrics](https://github.com/LEEClab/LS_METRICS) is a software designed to calculate ecologically based landscape metrics and landscape statistics, as well as generate maps of landscape connectivity. Also, the software is designed to prepare maps and enviroment for running BioDIM, an individual-based model of animal movement in fragmented landscapes. The software runs in a GRASS GIS (currently GRASS GIS 7.0.x) environment and uses raster images as input.
