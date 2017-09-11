@@ -176,7 +176,7 @@ grass.run_command("r.out.gdal", flags = "c", input = "SP_3543907_USO_raster_dive
 ###----------------------------------------------------------------------------------------###
 
 # clean
-grass.run_command("g.remove", flags = "f", type = "raster", pattern = "*raster*")
+grass.run_command("g.remove", flags = "f", type = "raster", pattern = "*diversity*")
 
 
 ###----------------------------------------------------------------------------------------###
