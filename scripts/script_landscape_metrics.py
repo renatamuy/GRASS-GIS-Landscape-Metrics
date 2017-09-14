@@ -42,7 +42,7 @@ grass.mapcalc("SP_3543907_USO_raster_forest = if(SP_3543907_USO_raster == 4, 1, 
 ## 1. percentage of forest
 
 # diameter = 3 pixels = 90 m
-# moving window  
+# moving window 
 grass.run_command("r.neighbors", input = "SP_3543907_USO_raster_forest", \
 	output = "SP_3543907_USO_raster_forest_avg_3", method = "average", size = "3", overwrite = True)
 
@@ -61,44 +61,65 @@ grass.run_command("r.out.gdal", flags = "c", input = "SP_3543907_USO_raster_fore
 grass.run_command("r.clump", flags = "d", input = "SP_3543907_USO_raster_forest", \
 	output = "SP_3543907_USO_raster_forest_clump", overwrite = True)
 
-# area - number of pixels
-grass.run_command("r.area", input = "SP_3543907_USO_raster_forest_clump", \
-	output = "SP_3543907_USO_raster_forest_clump_area", overwrite = True)
+# forest clump 
+ex = "SP_3543907_USO_raster_forest_clump_patch = SP_3543907_USO_raster_forest_clump * SP_3543907_USO_raster_forest"
+grass.mapcalc(ex, overwrite = True)
 
-# selection forest and area in hectares
-ex = "SP_3543907_USO_raster_forest_clump_area_ha_patch = if((SP_3543907_USO_raster_forest_clump_area * SP_3543907_USO_raster_forest) > 0, \
-(SP_3543907_USO_raster_forest_clump_area * SP_3543907_USO_raster_forest), null()) * 2 * 30 * 0.0001"
+# forest clump clean
+ex = "SP_3543907_USO_raster_forest_clump_patch_clean = if(SP_3543907_USO_raster_forest_clump_patch > 0, \
+SP_3543907_USO_raster_forest_clump_patch, null())"
+grass.mapcalc(ex, overwrite = True)
+
+# area - number of pixels
+grass.run_command("r.area", input = "SP_3543907_USO_raster_forest_clump_patch_clean", \
+	output = "SP_3543907_USO_raster_forest_clump_patch_clean_area", overwrite = True)
+
+# area in hectares
+ex = "SP_3543907_USO_raster_forest_clump_patch_clean_area_ha = SP_3543907_USO_raster_forest_clump_patch_clean_area * 2 * 30 * 0.0001"
 grass.mapcalc(ex, overwrite = True)
 
 # export
-grass.run_command("r.out.gdal", flags = "c", input = "SP_3543907_USO_raster_forest_clump_area_patch_ha", \
-	output = "SP_3543907_USO_raster_forest_clump_area_patch_ha" + ".tif", format = "GTiff", overwrite = True)
+grass.run_command("r.out.gdal", flags = "c", input = "SP_3543907_USO_raster_forest_clump_patch_clean_area_ha", \
+	output = "SP_3543907_USO_raster_forest_clump_patch_clean_area_ha" + ".tif", format = "GTiff", overwrite = True)
 
 ###----------------------------------------------------------------------------------------###
 
 ## 3. functional connectivity
 
-# diameter 3 pixels = 60 m
-# moving window  
+# diameter 3 pixels = gap of 60 m
+# moving window 
 grass.run_command("r.neighbors", input = "SP_3543907_USO_raster_forest", \
-	output = "SP_3543907_USO_raster_forest_max_3", method = "maximum", size = "3", overwrite = True)
+	output = "SP_3543907_USO_raster_forest_gap_60m", method = "maximum", size = "3", overwrite = True)
+
+# select gap
+ex = "SP_3543907_USO_raster_forest_gap_60m_temp = if(SP_3543907_USO_raster_forest_gap_60m == 0, null(), \
+SP_3543907_USO_raster_forest_gap_60m)"
+grass.mapcalc(ex, overwrite = True)
 
 # clump
-grass.run_command("r.clump", flags = "d", input = "SP_3543907_USO_raster_forest_max_3", \
-	output = "SP_3543907_USO_raster_forest_max_3_clump", overwrite = True)
+grass.run_command("r.clump", flags = "d", input = "SP_3543907_USO_raster_forest_gap_60m_temp", \
+	output = "SP_3543907_USO_raster_forest_gap_60m_temp_clump", overwrite = True)
+
+# forest clump
+ex = "SP_3543907_USO_raster_forest_gap_60m_temp_clump_patch = SP_3543907_USO_raster_forest_gap_60m_temp_clump * SP_3543907_USO_raster_forest"
+grass.mapcalc(ex, overwrite = True)
+
+# forest clump clean
+ex = "SP_3543907_USO_raster_forest_gap_60m_temp_clump_patch_clean = if(SP_3543907_USO_raster_forest_gap_60m_temp_clump_patch > 0, \
+SP_3543907_USO_raster_forest_gap_60m_temp_clump_patch, null())"
+grass.mapcalc(ex, overwrite = True)
 
 # area - number of pixels
-grass.run_command("r.area", input = "SP_3543907_USO_raster_forest_max_3_clump", \
-	output = "SP_3543907_USO_raster_forest_max_3_clump_area", overwrite = True)
+grass.run_command("r.area", input = "SP_3543907_USO_raster_forest_gap_60m_temp_clump_patch_clean", \
+	output = "SP_3543907_USO_raster_forest_gap_60m_temp_clump_patch_clean_area", overwrite = True)
 
-# selection forest and area in hectares
-ex = "SP_3543907_USO_raster_forest_max_3_clump_area_ha_patch = if((SP_3543907_USO_raster_forest_max_3_clump_area * SP_3543907_USO_raster_forest) > 0, \
-(SP_3543907_USO_raster_forest_max_3_clump_area * SP_3543907_USO_raster_forest), null()) * 2 * 30 * 0.0001"
+# area - hectare
+ex = "SP_3543907_USO_raster_forest_gap_60m_temp_clump_patch_clean_area_ha = SP_3543907_USO_raster_forest_gap_60m_temp_clump_patch_clean_area * 2 * 30 * 0.0001"
 grass.mapcalc(ex, overwrite = True)
 
 # export
-grass.run_command("r.out.gdal", flags = "c", input = "SP_3543907_USO_raster_forest_max_3_clump_area_patch_ha", \
-	output = "SP_3543907_USO_raster_forest_max_3_clump_area_patch_ha" + ".tif", format = "GTiff", overwrite = True)
+grass.run_command("r.out.gdal", flags = "c", input = "SP_3543907_USO_raster_forest_gap_60m_temp_clump_patch_clean_area_ha", \
+	output = "SP_3543907_USO_raster_forest_gap_60m_temp_clump_patch_clean_area_ha" + ".tif", format = "GTiff", overwrite = True)
 
 
 ###----------------------------------------------------------------------------------------###
@@ -106,32 +127,40 @@ grass.run_command("r.out.gdal", flags = "c", input = "SP_3543907_USO_raster_fore
 ## 4. core
 
 ### area
-# diameter 3 pixels = 60 m
-# moving window  
+# diameter 3 pixels = edge of 60 m
+# moving window 
 grass.run_command("r.neighbors", input = "SP_3543907_USO_raster_forest", \
-	output = "SP_3543907_USO_raster_forest_min_3", method = "minimum", size = "3", overwrite = True)
+	output = "SP_3543907_USO_raster_forest_core_60m", method = "minimum", size = "3", overwrite = True)
 
 # clump
-grass.run_command("r.clump", flags = "d", input = "SP_3543907_USO_raster_forest_min_3", \
-	output = "SP_3543907_USO_raster_forest_min_3_clump", overwrite = True)
+grass.run_command("r.clump", flags = "d", input = "SP_3543907_USO_raster_forest_core_60m", \
+	output = "SP_3543907_USO_raster_forest_core_60m_clump", overwrite = True)
+
+# forest clump
+ex = "SP_3543907_USO_raster_forest_core_60m_clump_patch = SP_3543907_USO_raster_forest_core_60m_clump * SP_3543907_USO_raster_forest_core_60m"
+grass.mapcalc(ex, overwrite = True)
+
+# forest clump clean
+ex = "SP_3543907_USO_raster_forest_core_60m_clump_patch_clean = if(SP_3543907_USO_raster_forest_core_60m_clump_patch > 0, \
+SP_3543907_USO_raster_forest_core_60m_clump_patch, null())"
+grass.mapcalc(ex, overwrite = True)
 
 # area - number of pixels
-grass.run_command("r.area", input = "SP_3543907_USO_raster_forest_min_3_clump", \
-	output = "SP_3543907_USO_raster_forest_min_3_clump_area", overwrite = True)
+grass.run_command("r.area", input = "SP_3543907_USO_raster_forest_core_60m_clump_patch_clean", \
+	output = "SP_3543907_USO_raster_forest_core_60m_clump_patch_clean_area", overwrite = True)
 
-# selection forest
-ex = "SP_3543907_USO_raster_forest_min_3_clump_area_ha_patch = if((SP_3543907_USO_raster_forest_min_3_clump_area * SP_3543907_USO_raster_forest_min_3) > 0, \
-(SP_3543907_USO_raster_forest_min_3_clump_area * SP_3543907_USO_raster_forest_min_3), null()) * 2 * 30 * 0.0001"
+# area - hectare
+ex = "SP_3543907_USO_raster_forest_core_60m_clump_patch_clean_area_ha = SP_3543907_USO_raster_forest_core_60m_clump_patch_clean_area * 2 * 30 * 0.0001"
 grass.mapcalc(ex, overwrite = True)
 
 # export
-grass.run_command("r.out.gdal", flags = "c", input = "SP_3543907_USO_raster_forest_min_3_clump_area_ha_patch", \
-	output = "SP_3543907_USO_raster_forest_min_3_clump_area_ha_patch" + ".tif", format = "GTiff", overwrite = True)
+grass.run_command("r.out.gdal", flags = "c", input = "SP_3543907_USO_raster_forest_core_60m_clump_patch_clean_area_ha", \
+	output = "SP_3543907_USO_raster_forest_core_60m_clump_patch_clean_area_ha" + ".tif", format = "GTiff", overwrite = True)
 
 
 ### porcentagem
 # diameter = 3 pixels = 90 m
-# moving window  
+# moving window 
 grass.run_command("r.neighbors", input = "SP_3543907_USO_raster_forest_min_3", \
 	output = "SP_3543907_USO_raster_forest_min_3_avg_3", method = "average", size = "3", overwrite = True)
 
@@ -170,7 +199,7 @@ grass.run_command("r.out.gdal", flags = "c", input = "SP_3543907_USO_raster_fore
 
 ### porcentagem
 # diameter = 3 pixels = 90 m
-# moving window  
+# moving window 
 grass.run_command("r.neighbors", input = "SP_3543907_USO_raster_forest_min_3_edge", \
 	output = "SP_3543907_USO_raster_forest_min_3_edge_avg_3", method = "average", size = "3", overwrite = True)
 
@@ -194,7 +223,7 @@ li = grass.list_grouped("rast", pattern = "diversity*")["PERMANENT"]
 print li
 
 for i in li:
-    grass.run_command("r.out.gdal", flags = "c", input = i, output = i + ".tif", format = "GTiff", overwrite = True)
+  grass.run_command("r.out.gdal", flags = "c", input = i, output = i + ".tif", format = "GTiff", overwrite = True)
 
 ###----------------------------------------------------------------------------------------###
 
@@ -325,6 +354,6 @@ grass.run_command("r.out.gdal", flags = "c", input = "SP_3543907_USO_raster_shan
 
 # calculates Simpson diversity index on a raster map
 grass.run_command("r.li.simpson", input = "SP_3543907_USO_raster", \
-	output = "SP_3543907_USO_raster_simpson", conf = "rio_claro", overwrite = True)  
+	output = "SP_3543907_USO_raster_simpson", conf = "rio_claro", overwrite = True) 
 grass.run_command("r.out.gdal", flags = "c", input = "SP_3543907_USO_raster_simpson", \
 	output = "SP_3543907_USO_raster_simpson" + ".tif", format = "GTiff", overwrite = True)
