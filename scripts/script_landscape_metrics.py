@@ -35,7 +35,15 @@ grass.run_command("v.to.rast", input = "SP_3543907_USO", output = "SP_3543907_US
 	type = "area", use = "cat", label_column = "CLASSE_USO", overwrite = True)
 
 # select forest class
+# with 0 #
 grass.mapcalc("SP_3543907_USO_raster_forest = if(SP_3543907_USO_raster == 4, 1, 0)", overwrite = True)
+
+# with null #
+grass.mapcalc("SP_3543907_USO_raster_forest_null = if(SP_3543907_USO_raster == 4, 1, null())", overwrite = True)
+
+# select no forest
+grass.mapcalc("SP_3543907_USO_raster_noforest_null = if(SP_3543907_USO_raster == 4, null(), 1)", overwrite = True)
+
 
 ###----------------------------------------------------------------------------------------###
 
@@ -81,7 +89,7 @@ grass.mapcalc(ex, overwrite = True)
 
 # with 0 #
 # area no habitat equal 0
-ex = "SP_3543907_USO_raster_forest_clump_patch_clean_area_ha_0_t = if(SP_3543907_USO_raster_forest == 0, 0, SP_3543907_USO_raster_forest_clump_patch_clean_area_ha)"
+ex = "SP_3543907_USO_raster_forest_clump_patch_clean_area_ha_0 = if(SP_3543907_USO_raster_forest == 0, 0, SP_3543907_USO_raster_forest_clump_patch_clean_area_ha)"
 grass.mapcalc(ex, overwrite = True)
 
 # export
@@ -122,22 +130,22 @@ SP_3543907_USO_raster_forest_gap_60m_temp_clump_patch, null())"
 grass.mapcalc(ex, overwrite = True)
 
 # area - number of pixels
-grass.run_command("r.area", input = "SP_3543907_USO_raster_forest_gap_60m_temp_clump_patch", \
-	output = "SP_3543907_USO_raster_forest_gap_60m_temp_clump_patch_area", overwrite = True)
+grass.run_command("r.area", input = "SP_3543907_USO_raster_forest_gap_60m_temp_clump_patch_clean", \
+	output = "SP_3543907_USO_raster_forest_gap_60m_temp_clump_patch_clean_area", overwrite = True)
 
 # area - hectare
-ex = "SP_3543907_USO_raster_forest_gap_60m_temp_clump_patch_area_ha = SP_3543907_USO_raster_forest_gap_60m_temp_clump_patch_area * 2 * 30 * 0.0001"
+ex = "SP_3543907_USO_raster_forest_gap_60m_temp_clump_patch_clean_area_ha = SP_3543907_USO_raster_forest_gap_60m_temp_clump_patch_clean_area * 2 * 30 * 0.0001"
 grass.mapcalc(ex, overwrite = True)
 
 
 # with 0 #
 # area no habitat equal 0
-ex = "SP_3543907_USO_raster_forest_gap_60m_temp_clump_patch_area_ha_0 = if(SP_3543907_USO_raster_forest == 0, 0, SP_3543907_USO_raster_forest_gap_60m_temp_clump_patch_area_ha)"
+ex = "SP_3543907_USO_raster_forest_gap_60m_temp_clump_patch_clean_area_ha_0 = if(SP_3543907_USO_raster_forest == 0, 0, SP_3543907_USO_raster_forest_gap_60m_temp_clump_patch_clean_area)"
 grass.mapcalc(ex, overwrite = True)
 
 # export
-grass.run_command("r.out.gdal", flags = "c", input = "SP_3543907_USO_raster_forest_gap_60m_temp_clump_patch_area_ha_0", \
-	output = "SP_3543907_USO_raster_forest_gap_60m_temp_clump_patch_area_ha_0" + ".tif", format = "GTiff", overwrite = True)
+grass.run_command("r.out.gdal", flags = "c", input = "SP_3543907_USO_raster_forest_gap_60m_temp_clump_patch_clean_area_ha_0", \
+	output = "SP_3543907_USO_raster_forest_gap_60m_temp_clump_patch_clean_area_ha_0" + ".tif", format = "GTiff", overwrite = True)
 
 
 # with null #
@@ -145,6 +153,14 @@ grass.run_command("r.out.gdal", flags = "c", input = "SP_3543907_USO_raster_fore
 grass.run_command("r.out.gdal", flags = "c", input = "SP_3543907_USO_raster_forest_gap_60m_temp_clump_patch_clean_area_ha", \
 	output = "SP_3543907_USO_raster_forest_gap_60m_temp_clump_patch_clean_area_ha_null" + ".tif", format = "GTiff", overwrite = True)
 
+
+# emma #
+# moving window 
+grass.run_command("r.neighbors", input = "SP_3543907_USO_raster_forest_gap_60m_temp_clump_patch_clean_area_ha", \
+	output = "SP_3543907_USO_raster_forest_gap_60m_temp_clump_patch_clean_area_ha_gap_60m", method = "maximum", size = "3", overwrite = True)
+
+grass.run_command("r.out.gdal", flags = "c", input = "SP_3543907_USO_raster_forest_gap_60m_temp_clump_patch_clean_area_ha_gap_60m", \
+	output = "SP_3543907_USO_raster_forest_gap_60m_temp_clump_patch_clean_area_ha_gap_60m_null" + ".tif", format = "GTiff", overwrite = True)
 
 ###----------------------------------------------------------------------------------------###
 
@@ -268,7 +284,42 @@ grass.run_command("r.out.gdal", flags = "c", input = "SP_3543907_USO_raster_fore
 
 ###----------------------------------------------------------------------------------------###
 
-# 6. diversity
+# 6. distance from edge
+# edge null
+ex = "SP_3543907_USO_raster_forest_edge_60m_null = if(SP_3543907_USO_raster_forest_edge_60m > 0, 1, null())"
+grass.mapcalc(ex, overwrite = True)
+
+# forest edge distance
+grass.run_command("r.grow.distance", input = "SP_3543907_USO_raster_forest_edge_60m_null", \
+	distance = "SP_3543907_USO_raster_forest_edge_60m_null_distance", overwrite = True)
+
+# distance outside forest
+ex = "SP_3543907_USO_raster_forest_edge_60m_null_distance_outside_forest = SP_3543907_USO_raster_forest_edge_60m_null_distance * SP_3543907_USO_raster_noforest_null"
+grass.mapcalc(ex, overwrite = True)
+
+# distance inside forest
+ex = "SP_3543907_USO_raster_forest_edge_60m_null_distance_inside_forest = SP_3543907_USO_raster_forest_edge_60m_null_distance * SP_3543907_USO_raster_forest_null"
+grass.mapcalc(ex, overwrite = True)
+
+# negative distance inside forest
+ex = "SP_3543907_USO_raster_forest_edge_60m_null_distance_inside_forest_neg = if(SP_3543907_USO_raster_forest_edge_60m_null_distance_inside_forest > 0, \
+SP_3543907_USO_raster_forest_edge_60m_null_distance_inside_forest * -1, 0)"
+grass.mapcalc(ex, overwrite = True)
+
+# composite raster distance
+grass.run_command("r.patch", input = "SP_3543907_USO_raster_forest_edge_60m_null_distance_inside_forest_neg,\
+	SP_3543907_USO_raster_forest_edge_60m_null_distance_outside_forest", \
+	output = "SP_3543907_USO_raster_forest_edge_60m_null_distance_edge")
+
+# export
+grass.run_command("r.out.gdal", flags = "c", input = "SP_3543907_USO_raster_forest_edge_60m_null_distance_edge", \
+	output = "SP_3543907_USO_raster_forest_edge_60m_null_distance_edge" + ".tif", format = "GTiff", overwrite = True)
+
+
+
+###----------------------------------------------------------------------------------------###
+
+# 7. diversity
 
 # diversity
 grass.run_command("r.diversity", input = "SP_3543907_USO_raster", prefix = "diversity", \
@@ -284,13 +335,10 @@ for i in li:
 ###----------------------------------------------------------------------------------------###
 
 # clean
-grass.run_command("g.remove", flags = "f", type = "raster", pattern = "*diversity*")
+# grass.run_command("g.remove", flags = "f", type = "raster", pattern = "*raster*")
 
 
 ###----------------------------------------------------------------------------------------###
-
-# select forest class
-grass.mapcalc("SP_3543907_USO_raster_forest_null = if(SP_3543907_USO_raster == 4, 1, null())", overwrite = True)
 
 # rlisetup
 #grass.run_command("g.gui.rlisetup")
