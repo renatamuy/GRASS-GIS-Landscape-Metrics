@@ -1,7 +1,7 @@
 ### script landscape metrics ###
 
 # Maurício Humberto Vancine - mauricio.vancine@gmail.com
-# 04/09/2017
+# 14/09/2017
 
 ###----------------------------------------------------------------------------------------###
 
@@ -20,12 +20,12 @@ os.chdir(fo)
 print os.listdir(fo)
 
 # addons
-# grass.run_command("g.extension", extension = "r.area", operation = "add")
-# grass.run_command("g.extension", extension = "r.diversity", operation = "add")
+grass.run_command("g.extension", extension = "r.area", operation = "add")
+grass.run_command("g.extension", extension = "r.diversity", operation = "add")
 
 # import vector of land use
-# grass.run_command("v.in.ogr", input = "SP_3543907_USO.shp", output = "SP_3543907_USO", \
-# 	overwrite = True)
+ grass.run_command("v.in.ogr", input = "SP_3543907_USO.shp", output = "SP_3543907_USO", \
+ 	overwrite = True)
 
 # define region and resolution
 grass.run_command("g.region", flags = "p", vector = "SP_3543907_USO", res = 30)
