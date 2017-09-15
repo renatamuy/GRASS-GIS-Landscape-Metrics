@@ -20,12 +20,12 @@ os.chdir(fo)
 print os.listdir(fo)
 
 # addons
-grass.run_command("g.extension", extension = "r.area", operation = "add")
-grass.run_command("g.extension", extension = "r.diversity", operation = "add")
+# grass.run_command("g.extension", extension = "r.area", operation = "add")
+# grass.run_command("g.extension", extension = "r.diversity", operation = "add")
 
 # import vector of land use
- grass.run_command("v.in.ogr", input = "SP_3543907_USO.shp", output = "SP_3543907_USO", \
- 	overwrite = True)
+#grass.run_command("v.in.ogr", input = "SP_3543907_USO.shp", output = "SP_3543907_USO", \
+#    overwrite = True)
 
 # define region and resolution
 grass.run_command("g.region", flags = "p", vector = "SP_3543907_USO", res = 30)
@@ -334,11 +334,6 @@ for i in li:
 
 ###----------------------------------------------------------------------------------------###
 
-# clean
-# grass.run_command("g.remove", flags = "f", type = "raster", pattern = "*raster*")
-
-
-###----------------------------------------------------------------------------------------###
 
 # rlisetup
 #grass.run_command("g.gui.rlisetup")
@@ -421,8 +416,8 @@ grass.run_command("r.out.gdal", flags = "c", input = "SP_3543907_USO_raster_fore
 # calculates mean pixel attribute index on a raster map
 grass.run_command("r.li.mpa", input = "SP_3543907_USO_raster", \
 	output = "SP_3543907_USO_raster_mpa", conf = "rio_claro", overwrite = True)
-grass.run_command("r.out.gdal", flags = "c", input = "SP_3543907_USO_raster_forest_null_mpa", \
-	output = "SP_3543907_USO_raster_forest_null_mpa" + ".tif", format = "GTiff", overwrite = True)
+grass.run_command("r.out.gdal", flags = "c", input = "SP_3543907_USO_raster_mpa", \
+	output = "SP_3543907_USO_raster_mpa" + ".tif", format = "GTiff", overwrite = True)
 
 
 ## diversity indices:
@@ -461,3 +456,11 @@ grass.run_command("r.li.simpson", input = "SP_3543907_USO_raster", \
 	output = "SP_3543907_USO_raster_simpson", conf = "rio_claro", overwrite = True) 
 grass.run_command("r.out.gdal", flags = "c", input = "SP_3543907_USO_raster_simpson", \
 	output = "SP_3543907_USO_raster_simpson" + ".tif", format = "GTiff", overwrite = True)
+
+
+###----------------------------------------------------------------------------------------###
+
+# clean
+# grass.run_command("g.remove", flags = "f", type = "raster", pattern = "*raster*")
+
+###----------------------------------------------------------------------------------------###
