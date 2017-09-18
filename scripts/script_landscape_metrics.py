@@ -322,15 +322,15 @@ grass.run_command("r.out.gdal", flags = "c", input = "SP_3543907_USO_raster_fore
 # 7. diversity
 
 # diversity
-grass.run_command("r.diversity", input = "SP_3543907_USO_raster", prefix = "diversity", \
-	size = 3, alpha = .5, overwrite = True)
+# grass.run_command("r.diversity", input = "SP_3543907_USO_raster", prefix = "diversity", \
+# 	size = 3, alpha = .5, overwrite = True)
 
-# export
-li = grass.list_grouped("rast", pattern = "diversity*")["PERMANENT"]
-print li
+# # export
+# li = grass.list_grouped("rast", pattern = "diversity*")["PERMANENT"]
+# print li
 
-for i in li:
-  grass.run_command("r.out.gdal", flags = "c", input = i, output = i + ".tif", format = "GTiff", overwrite = True)
+# for i in li:
+#   grass.run_command("r.out.gdal", flags = "c", input = i, output = i + ".tif", format = "GTiff", overwrite = True)
 
 ###----------------------------------------------------------------------------------------###
 
