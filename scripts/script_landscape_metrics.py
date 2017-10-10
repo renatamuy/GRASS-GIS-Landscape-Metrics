@@ -24,8 +24,8 @@ print os.listdir(fo)
 # grass.run_command("g.extension", extension = "r.diversity", operation = "add")
 
 # import vector of land use
-#grass.run_command("v.in.ogr", input = "SP_3543907_USO.shp", output = "SP_3543907_USO", \
-#    overwrite = True)
+grass.run_command("v.in.ogr", input = "SP_3543907_USO.shp", output = "SP_3543907_USO2", \
+    overwrite = True)
 
 # define region and resolution
 grass.run_command("g.region", flags = "p", vector = "SP_3543907_USO", res = 30)
@@ -83,7 +83,7 @@ grass.run_command("r.area", input = "SP_3543907_USO_raster_forest_clump_patch_cl
 	output = "SP_3543907_USO_raster_forest_clump_patch_clean_area", overwrite = True)
 
 # area in hectares
-ex = "SP_3543907_USO_raster_forest_clump_patch_clean_area_ha = SP_3543907_USO_raster_forest_clump_patch_clean_area * 2 * 30 * 0.0001"
+ex = "SP_3543907_USO_raster_forest_clump_patch_clean_area_ha = SP_3543907_USO_raster_forest_clump_patch_clean_area * 30 * 30 * 0.0001"
 grass.mapcalc(ex, overwrite = True)
 
 
@@ -134,7 +134,7 @@ grass.run_command("r.area", input = "SP_3543907_USO_raster_forest_gap_60m_temp_c
 	output = "SP_3543907_USO_raster_forest_gap_60m_temp_clump_patch_clean_area", overwrite = True)
 
 # area - hectare
-ex = "SP_3543907_USO_raster_forest_gap_60m_temp_clump_patch_clean_area_ha = SP_3543907_USO_raster_forest_gap_60m_temp_clump_patch_clean_area * 2 * 30 * 0.0001"
+ex = "SP_3543907_USO_raster_forest_gap_60m_temp_clump_patch_clean_area_ha = SP_3543907_USO_raster_forest_gap_60m_temp_clump_patch_clean_area * 30 * 30 * 0.0001"
 grass.mapcalc(ex, overwrite = True)
 
 
@@ -190,7 +190,7 @@ grass.run_command("r.area", input = "SP_3543907_USO_raster_forest_core_60m_clump
 	output = "SP_3543907_USO_raster_forest_core_60m_clump_patch_clean_area", overwrite = True)
 
 # area - hectare
-ex = "SP_3543907_USO_raster_forest_core_60m_clump_patch_clean_area_ha = SP_3543907_USO_raster_forest_core_60m_clump_patch_clean_area * 2 * 30 * 0.0001"
+ex = "SP_3543907_USO_raster_forest_core_60m_clump_patch_clean_area_ha = SP_3543907_USO_raster_forest_core_60m_clump_patch_clean_area * 30 * 30 * 0.0001"
 grass.mapcalc(ex, overwrite = True)
 
 
@@ -249,7 +249,7 @@ grass.run_command("r.area", input = "SP_3543907_USO_raster_forest_edge_60m_clump
 	output = "SP_3543907_USO_raster_forest_edge_60m_clump_patch_clean_area", overwrite = True)
 
 # area - hectare
-ex = "SP_3543907_USO_raster_forest_edge_60m_clump_patch_clean_area_ha = SP_3543907_USO_raster_forest_edge_60m_clump_patch_clean_area * 2 * 30 * 0.0001"
+ex = "SP_3543907_USO_raster_forest_edge_60m_clump_patch_clean_area_ha = SP_3543907_USO_raster_forest_edge_60m_clump_patch_clean_area * 30 * 30 * 0.0001"
 grass.mapcalc(ex, overwrite = True)
 
 
