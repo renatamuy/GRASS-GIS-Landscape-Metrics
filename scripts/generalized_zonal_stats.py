@@ -1,3 +1,17 @@
+#---------------------------------------------------------------------------------------
+"""
+ Generalized zonal statistics for GRASS GIS
+
+ Bernardo B. S. Niebuhr - bernardo_brandaum@yahoo.com.br
+ 
+ Laboratorio de Ecologia Espacial e Conservacao
+ Universidade Estadual Paulista - UNESP
+ Rio Claro - SP - Brasil
+
+ This script runs in GRASS GIS 7.X environment.
+"""
+#---------------------------------------------------------------------------------------
+
 # Import modules
 import os
 import grass.script as grass

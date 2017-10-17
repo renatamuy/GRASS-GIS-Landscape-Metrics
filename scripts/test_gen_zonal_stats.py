@@ -1,6 +1,20 @@
-# Script to calculate generalized zonal stats
+#---------------------------------------------------------------------------------------
+"""
+ Script to test generalized zonal stats in GRASS GIS
 
-# PS: After creating a location based on the input shapefile
+ Bernardo B. S. Niebuhr - bernardo_brandaum@yahoo.com.br
+ 
+ Laboratorio de Ecologia Espacial e Conservacao
+ Universidade Estadual Paulista - UNESP
+ Rio Claro - SP - Brasil
+
+ This script runs in GRASS GIS 7.X environment.
+"""
+#--------------------------------------------------------------------------------------- 
+
+#------------------
+# 1.
+# First create a GRASS GIS location based on the input shapefile and open GRASS within it
 
 # Open python
 python
@@ -9,20 +23,32 @@ python
 import os
 import grass.script as grass
 import subprocess
+import time
+
+#------------------
+# 2.
+# Import files
 
 # Set folder where input files are
-input_dir = r'/home/leecb/Github/GRASS-GIS-Landscape-Metrics/input_files'
+input_dir = r'/home/leecb/Github/GRASS-GIS-Landscape-Metrics/input_files_zonal_stats'
 os.chdir(input_dir)
 
-# Import shape file
+# Import shape file (municipalities of South Brazil)
 shape_name = 'mun_teste_wgs84'
 grass.run_command('v.in.ogr', input = shape_name+'.shp', output = shape_name, overwrite = True)
 
-# Import raster
-raster_name = 'BR_2001_euca_9'
-grass.run_command('r.in.gdal', input = raster_name+'.tif', output = raster_name, overwrite = True)
+# Import rasters (areas of Eucalyptus plantation in 2001-2004)
+maps = ['BR_2001_euca_9', 'BR_2002_euca_9', 'BR_2003_euca_9', 'BR_2004_euca_9']
+for i in maps:
+    grass.run_command('r.in.gdal', input = i+'.tif', output = i, overwrite = True)
 
-# Now, run LSMetrics and calculate the metrics "patch size"
+#------------------
+# 3.
+# Run patch size metric (only for number of patches)
+
+# To calculate the number of patches in each municipality, we will need a map of patch ID, which
+# identifies habitat patches and sets an ID for each of them
+# It may be done, e.g., running LSMetrics - it is necessary to calculate the metric "patch size"
 # More info here: https://github.com/LEEClab/LS_METRICS/
 
 # We can leave python, change to LSMetrics script dir and run the LSMetrics script there
@@ -34,18 +60,25 @@ os.chdir(lsmetrics_dir)
 subprocess.call('python LSMetrics_v1_0_0.py', shell=True) # runs and wait
 # Here it is important to decide whether pixels on the diagonal will be considered as the same patch or not!!
 
-# We will use the Patch ID map to calculate the number of patches within a shapefile feature
-# We will use the binary eucaliptus map to calculate the proportion of eucaliputs within a shapefile feature
+#------------------
+# 4.
+# Run zonal stats
+
+# We will use the Patch ID map to calculate the number of patches within a shapefile feature (municipality in this example)
+# We will use the binary eucaliptus map to calculate the proportion of eucaliputs within a shapefile feature (municipality in this example)
 
 # Change to the script folder
 script_dir = r'/home/leecb/Github/GRASS-GIS-Landscape-Metrics/scripts'
 os.chdir(script_dir)
 
-# Import generalized_zonal_stats class
+# Import generalized_zonal_stats class and functions
 from generalized_zonal_stats import generalized_zonal_stats, proportion_habitat, number_patches
 
-#---------------
-# Running for proportion of eucaliptus
+#------------------
+# 4.1.
+# Running for proportion of eucaliptus for only 1 year - 2001
+
+# Input shape and raster
 input_shp = 'mun_teste_wgs84'
 input_rast = ['BR_2001_euca_9']
 
@@ -53,14 +86,15 @@ input_rast = ['BR_2001_euca_9']
 teststats = generalized_zonal_stats(input_shape = input_shp, input_rasters = input_rast, folder = input_dir)
 
 # Create new cols
-cols = ['prp_euca_2001']
-col_type = ['float']
+cols = ['prp_euca_2001'] # Column name
+col_type = ['float'] # Column type
 
 # WARNING! GRASS GIS does not like col names longer than 8-10 characters, so try to be very concise!!
 # Or later you can do something like 
 # grass.run_command('v.db.renamecolumn', map=shape_name, column='oldcolname,newcolname')
 #grass.run_command('v.db.renamecolumn', map=shape_name, column='prp_euca_2001,p_eu_2001')
 
+# Create cols
 teststats.create_new_column(column_names = cols, type_col=col_type)
 
 # Calculate proportion of eucaliptus in each feature using proportion_habitat function
@@ -73,24 +107,79 @@ os.chdir(input_dir)
 # export db in csv format
 #grass.run_command('db.out.ogr', input = shape_name, output = shape_name+'_prop_euca.csv')
 
-#-------------------
-# Running for number of patches
+#------------------
+# 4.2.
+# Running for proportion of eucaliptus for only 3 years - 2001-2004
+
+# Input shape and rasters
 input_shp = 'mun_teste_wgs84'
-input_rast = ['BR_2001_euca_9_pid']
+input_rast = ['BR_2002_euca_9', 'BR_2003_euca_9', 'BR_2004_euca_9']
+
+# Initialize and select maps to be used in zonal stats
+test_prop_euca = generalized_zonal_stats(input_shape = input_shp, input_rasters = input_rast, folder = input_dir)
+
+# Create new cols
+cols = ['prp_euca_2002', 'prp_euca_2003', 'prp_euca_2004'] # Col name
+col_type = ['float', 'float', 'float'] # Col type
+
+# WARNING! GRASS GIS does not like col names longer than 8-10 characters, so try to be very concise!!
+# Or later you can do something like 
+# grass.run_command('v.db.renamecolumn', map=shape_name, column='oldcolname,newcolname')
+#grass.run_command('v.db.renamecolumn', map=shape_name, column='prp_euca_2001,p_eu_2001')
+
+# Create cols
+test_prop_euca.create_new_column(column_names = cols, type_col=col_type)
+
+# Monitoring time
+start = time.time()
+
+# Calculate proportion of eucaliptus in each feature using proportion_habitat function
+test_prop_euca.run_zonal_stats(proportion_habitat)
+
+# Monitoring time
+end = time.time()
+
+# Print total time
+print 'The zonal stats for prop of habitat for 3 years took us '+str((end - start)/60)+' minutes.'
+
+# Export shapefile
+os.chdir(input_dir)
+# export shape file
+#grass.run_command('v.out.ogr', input = shape_name, output = shape_name+'_prop_euca.shp', overwrite = True)
+# export db in csv format
+#grass.run_command('db.out.ogr', input = shape_name, output = shape_name+'_prop_euca.csv')
+
+#------------------
+# 4.3.
+# Running for number of patches for 2001-2004
+
+# Input shape and rasters
+input_shp = 'mun_teste_wgs84'
+input_rast = ['BR_2001_euca_9_pid', 'BR_2002_euca_9_pid', 'BR_2003_euca_9_pid', 'BR_2004_euca_9_pid']
 
 # Initialize and select maps to be used in zonal stats
 test_np = generalized_zonal_stats(input_shape = input_shp, input_rasters = input_rast, folder = input_dir)
 
 # Create new cols
-cols = ['np_2001']
-col_type = ['int']
+cols = ['np_2001', 'np_2002', 'np_2003', 'np_2004'] # Col names
+col_type = ['int', 'int', 'int', 'int'] # Col type
 
 # WARNING! GRASS GIS does not like col names longer than 8-10 characters, so try to be very concise!!
 
+# Create cols
 test_np.create_new_column(column_names = cols, type_col=col_type)
+
+# Monitoring time
+start = time.time()
 
 # Calculate number of patches (clumps) of eucaliptus in each feature using number_patches function
 test_np.run_zonal_stats(number_patches, mask = True)
+
+# Monitoring time
+end = time.time()
+
+# Print total time
+print 'The zonal stats for number of patches for 4 years took us '+str((end - start)/60)+' minutes.'
 
 # Export shapefile
 os.chdir(input_dir)
