@@ -225,6 +225,11 @@ class generalized_zonal_stats():
         # Names of columns
         self.column_names = column_names
         
+        # Test if column name is greater than 10 characters and raise error if True
+        # This is done to avoid errors with dbf while exporting the shapefile later
+        if any([len(i) > 10 for i in column_names]):
+            raise ValueError('Column names should be up to 10 characters. Please choose other names and retry.')
+        
         # If the length on column names and types is correct, go on
         if len(column_names) == len(self.input_rasters) and len(type_col) == len(self.input_rasters):
             
