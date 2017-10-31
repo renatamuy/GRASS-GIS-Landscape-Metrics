@@ -125,7 +125,7 @@ def number_patches(input_raster_pid, mask = False):
     return number_of_patches
     
 # Class generalized_zonal_stats
-class generalized_zonal_stats():
+class GeneralizedZonalStats():
     
     # Function init - load shape and raster maps
     def __init__(self, input_shape, overwrite_shape = False, input_rasters = [], overwrite_rasters = False, folder = ''):
