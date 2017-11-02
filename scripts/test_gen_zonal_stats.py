@@ -16,7 +16,7 @@
 # 1.
 # First create a GRASS GIS location based on the input shapefile and open GRASS within it
 
-# Open python
+# Open python (Use black box as the terminal, and NOT the python Shell)
 python
 
 # Import modules
@@ -37,8 +37,8 @@ os.chdir(input_dir)
 shape_name = 'mun_teste_wgs84'
 grass.run_command('v.in.ogr', input = shape_name+'.shp', output = shape_name, overwrite = True)
 
-# Import rasters (areas of Eucalyptus plantation in 2001-2004)
-maps = ['BR_2001_euca_9', 'BR_2002_euca_9', 'BR_2003_euca_9', 'BR_2004_euca_9']
+# Import rasters (areas of Eucalyptus plantation in 2001-2003)
+maps = ['BR_2001_euca_9', 'BR_2002_euca_9', 'BR_2003_euca_9']
 for i in maps:
     grass.run_command('r.in.gdal', input = i+'.tif', output = i, overwrite = True)
 
@@ -46,7 +46,7 @@ for i in maps:
 # 3.
 # Run patch size metric (only for number of patches)
 
-# To calculate the number of patches in each municipality, we will need a map of patch ID, which
+# To calculate the number of patches in each municipality, we will need a map of patch ID (pid), which
 # identifies habitat patches and sets an ID for each of them
 # It may be done, e.g., running LSMetrics - it is necessary to calculate the metric "patch size"
 # More info here: https://github.com/LEEClab/LS_METRICS/
@@ -58,21 +58,20 @@ os.chdir(lsmetrics_dir)
 
 # Run LSMetrics
 subprocess.call('python LSMetrics_v1_0_0.py', shell=True) # runs and wait
-# Here it is important to decide whether pixels on the diagonal will be considered as the same patch or not!!
 
 #------------------
 # 4.
 # Run zonal stats
 
 # We will use the Patch ID map to calculate the number of patches within a shapefile feature (municipality in this example)
-# We will use the binary eucaliptus map to calculate the proportion of eucaliputs within a shapefile feature (municipality in this example)
+# We will use the binary eucalyptus map to calculate the proportion of eucalyputs within a shapefile feature (municipality in this example)
 
 # Change to the script folder
 script_dir = r'/home/leecb/Github/GRASS-GIS-Landscape-Metrics/scripts'
 os.chdir(script_dir)
 
 # Import generalized_zonal_stats class and functions
-from generalized_zonal_stats import generalized_zonal_stats, proportion_habitat, number_patches
+from generalized_zonal_stats import GeneralizedZonalStats, proportion_habitat, number_patches
 
 #------------------
 # 4.1.
@@ -83,10 +82,10 @@ input_shp = 'mun_teste_wgs84'
 input_rast = ['BR_2001_euca_9']
 
 # Initialize and select maps to be used in zonal stats
-teststats = generalized_zonal_stats(input_shape = input_shp, input_rasters = input_rast, folder = input_dir)
+teststats = GeneralizedZonalStats(input_shape = input_shp, input_rasters = input_rast, folder = input_dir)
 
 # Create new cols
-cols = ['prp_euca_2001'] # Column name
+cols = ['p_euca_2001'] # Column name
 col_type = ['float'] # Column type
 
 # WARNING! GRASS GIS does not like col names longer than 8-10 characters, so try to be very concise!!
@@ -102,24 +101,24 @@ teststats.run_zonal_stats(proportion_habitat)
 
 # Export shapefile
 os.chdir(input_dir)
-# export shape file
+# export shape file with a single new column 
 #grass.run_command('v.out.ogr', input = shape_name, output = shape_name+'_prop_euca.shp', overwrite = True)
 # export db in csv format
-#grass.run_command('db.out.ogr', input = shape_name, output = shape_name+'_prop_euca.csv')
+#grass.run_command('db.out.ogr', input = shape_name, output = shape_name+'_prop_euca.csv', format= CSV)
 
 #------------------
 # 4.2.
-# Running for proportion of eucaliptus for only 3 years - 2001-2004
+# Running for proportion of eucaliptus for only 3 years - 2001-2003
 
 # Input shape and rasters
 input_shp = 'mun_teste_wgs84'
-input_rast = ['BR_2002_euca_9', 'BR_2003_euca_9', 'BR_2004_euca_9']
+input_rast = ['BR_2001_euca_9', 'BR_2002_euca_9', 'BR_2003_euca_9']
 
 # Initialize and select maps to be used in zonal stats
-test_prop_euca = generalized_zonal_stats(input_shape = input_shp, input_rasters = input_rast, folder = input_dir)
+test_prop_euca = GeneralizedZonalStats(input_shape = input_shp, input_rasters = input_rast, folder = input_dir)
 
 # Create new cols
-cols = ['prp_euca_2002', 'prp_euca_2003', 'prp_euca_2004'] # Col name
+cols = ['p_euca_2001', 'p_euca_2002', 'p_euca_2003'] # Col name
 col_type = ['float', 'float', 'float'] # Col type
 
 # WARNING! GRASS GIS does not like col names longer than 8-10 characters, so try to be very concise!!
@@ -151,18 +150,18 @@ os.chdir(input_dir)
 
 #------------------
 # 4.3.
-# Running for number of patches for 2001-2004
+# Running for number of patches for 2001-2003
 
 # Input shape and rasters
 input_shp = 'mun_teste_wgs84'
-input_rast = ['BR_2001_euca_9_pid', 'BR_2002_euca_9_pid', 'BR_2003_euca_9_pid', 'BR_2004_euca_9_pid']
+input_rast = ['BR_2001_euca_9_pid', 'BR_2002_euca_9_pid', 'BR_2003_euca_9_pid']
 
 # Initialize and select maps to be used in zonal stats
-test_np = generalized_zonal_stats(input_shape = input_shp, input_rasters = input_rast, folder = input_dir)
+test_np = GeneralizedZonalStats(input_shape = input_shp, input_rasters = input_rast, folder = input_dir)
 
 # Create new cols
-cols = ['np_2001', 'np_2002', 'np_2003', 'np_2004'] # Col names
-col_type = ['int', 'int', 'int', 'int'] # Col type
+cols = ['np_euca_2001', 'np_euca_2002', 'np_euca_2003'] # Col names
+col_type = ['int', 'int', 'int'] # Col type
 
 # WARNING! GRASS GIS does not like col names longer than 8-10 characters, so try to be very concise!!
 
@@ -179,15 +178,15 @@ test_np.run_zonal_stats(number_patches, mask = True)
 end = time.time()
 
 # Print total time
-print 'The zonal stats for number of patches for 4 years took us '+str((end - start)/60)+' minutes.'
+print 'The zonal stats for number of patches for 3 years took us '+str((end - start)/60)+' minutes.'
 
 # Export shapefile
 os.chdir(input_dir)
 # export shape file
-grass.run_command('v.out.ogr', input = shape_name, output = shape_name+'_prop_euca_np.shp', overwrite = True)
+grass.run_command('v.out.ogr', input = shape_name, output = shape_name+'_prop_euca_np_euca.shp', overwrite = True)
 
 #-------------------------------------------------------------------------
-# Do not run below!!!!
+# Do NOT run below!!!!
 # Other tests
 python 
 
@@ -240,7 +239,7 @@ script_dir = r'/home/leecb/Github/GRASS-GIS-Landscape-Metrics/scripts'
 os.chdir(script_dir)
 
 # Import generalized_zonal_stats class
-from generalized_zonal_stats import generalized_zonal_stats, proportion_habitat
+from generalized_zonal_stats import GeneralizedZonalStats, proportion_habitat
 
 input_rast = ['BR_2001_euca_9']
 proportion_habitat(input_rast)
